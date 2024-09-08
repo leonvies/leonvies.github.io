@@ -1,0 +1,477 @@
+<html><head><base href="https://websimcreationengine.com/school-year-registration/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro Escolar por Ano/Série</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+    button {
+        width: 100%;
+        padding: 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    input[type="text"], input[type="file"], textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    li {
+        background-color: white;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .student-item {
+        display: flex;
+        align-items: center;
+    }
+    .student-item img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        margin-right: 10px;
+        border-radius: 4px;
+    }
+    .student-info {
+        flex-grow: 1;
+    }
+    .student-name {
+        font-weight: bold;
+    }
+    .student-occurrence {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 5px;
+    }
+    .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .nav-buttons button {
+        width: 48%;
+    }
+    .student-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+    }
+    .student-actions button {
+        padding: 5px 10px;
+        margin-left: 5px;
+        font-size: 14px;
+    }
+    .edit-button {
+        background-color: #FFA500;
+    }
+    .delete-button {
+        background-color: #FF4136;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    #modalImage {
+        max-width: 100%;
+        height: auto;
+        margin-top: 20px;
+    }
+    #modalOccurrence {
+        margin-top: 10px;
+        font-style: italic;
+        color: #666;
+    }
+    .dialog-buttons {
+        margin-top: 20px;
+    }
+    .dialog-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+    }
+    #recipientSelect, #studentSelect {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    #pushMessage {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        min-height: 100px;
+    }
+    #charCount {
+        text-align: right;
+        color: #666;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+    <div class="container" id="homeScreen">
+        <h1>Escolha o Ano/Série</h1>
+        <div class="button-grid">
+            <button onclick="goToRegistration('1º Ano')">1º Ano</button>
+            <button onclick="goToRegistration('2º Ano')">2º Ano</button>
+            <button onclick="goToRegistration('3º Ano')">3º Ano</button>
+            <button onclick="goToRegistration('4º Ano')">4º Ano</button>
+            <button onclick="goToRegistration('5º Ano')">5º Ano</button>
+            <button onclick="goToRegistration('6º Ano')">6º Ano</button>
+            <button onclick="goToRegistration('7º Ano')">7º Ano</button>
+            <button onclick="goToRegistration('8º Ano')">8º Ano</button>
+            <button onclick="goToRegistration('9º Ano')">9º Ano</button>
+        </div>
+    </div>
+
+    <div class="container" id="inputScreen" style="display: none;">
+        <h1 id="registrationTitle">Adicionar Dado</h1>
+        <input type="text" id="dataInput" placeholder="Digite o nome do aluno">
+        <textarea id="occurrenceInput" placeholder="Digite a ocorrência do aluno"></textarea>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="addData()">Adicionar</button>
+        <div class="nav-buttons">
+            <button onclick="showListView()">Ver Lista</button>
+            <button onclick="showHomeScreen()">Voltar</button>
+        </div>
+    </div>
+
+    <div class="container" id="listViewScreen" style="display: none;">
+        <h1>Lista de Alunos</h1>
+        <ul id="dataList"></ul>
+        <div class="nav-buttons">
+            <button onclick="showInputScreen()">Voltar</button>
+            <button onclick="showPushNotificationModal()">Enviar Notificação</button>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('imageModal')">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <img id="modalImage" alt="Imagem do aluno" src="" width="400" height="300">
+            <p id="modalOccurrence"></p>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja excluir este aluno?</p>
+            <div class="dialog-buttons">
+                <button onclick="confirmDelete()">Confirmar</button>
+                <button onclick="closeModal('deleteModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pushNotificationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('pushNotificationModal')">&times;</span>
+            <h2>Enviar Notificação</h2>
+            <select id="recipientSelect">
+                <option value="all">Todos os pais</option>
+                <option value="specific">Aluno específico</option>
+            </select>
+            <select id="studentSelect" style="display: none;"></select>
+            <textarea id="pushMessage" maxlength="200" placeholder="Digite sua mensagem (máximo 200 caracteres)"></textarea>
+            <p id="charCount">0/200</p>
+            <button onclick="sendPushNotification()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+    let dataArray = [];
+    let currentYear = '';
+    let currentDeleteIndex = -1;
+
+    function goToRegistration(year) {
+        currentYear = year;
+        document.getElementById('homeScreen').style.display = 'none';
+        document.getElementById('inputScreen').style.display = 'block';
+        document.getElementById('registrationTitle').textContent = `Cadastro - ${year}`;
+    }
+
+    function showHomeScreen() {
+        document.getElementById('inputScreen').style.display = 'none';
+        document.getElementById('listViewScreen').style.display = 'none';
+        document.getElementById('homeScreen').style.display = 'block';
+    }
+
+    function addData() {
+        const input = document.getElementById('dataInput');
+        const occurrenceInput = document.getElementById('occurrenceInput');
+        const imageInput = document.getElementById('imageInput');
+        const data = input.value.trim();
+        const occurrence = occurrenceInput.value.trim();
+        if (data) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                dataArray.push({
+                    text: data,
+                    occurrence: occurrence,
+                    image: e.target.result,
+                    year: currentYear
+                });
+                input.value = '';
+                occurrenceInput.value = '';
+                imageInput.value = '';
+                updateListView();
+            };
+            if (imageInput.files[0]) {
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                dataArray.push({
+                    text: data,
+                    occurrence: occurrence,
+                    image: null,
+                    year: currentYear
+                });
+                input.value = '';
+                occurrenceInput.value = '';
+                updateListView();
+            }
+        }
+    }
+
+    function updateListView() {
+        const list = document.getElementById('dataList');
+        list.innerHTML = '';
+        dataArray.filter(item => item.year === currentYear).forEach((item, index) => {
+            const li = document.createElement('li');
+            li.className = 'student-item';
+            
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'student-image';
+            const img = document.createElement('img');
+            img.src = item.image ? item.image : `https://picsum.photos/50/50?random=${index}`;
+            img.alt = `Miniatura para ${item.text}`;
+            imgContainer.appendChild(img);
+            li.appendChild(imgContainer);
+            
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'student-info';
+            
+            const nameSpan = document.createElement('div');
+            nameSpan.className = 'student-name';
+            nameSpan.textContent = item.text;
+            infoContainer.appendChild(nameSpan);
+            
+            const occurrenceSpan = document.createElement('div');
+            occurrenceSpan.className = 'student-occurrence';
+            occurrenceSpan.textContent = item.occurrence ? `Ocorrência: ${item.occurrence}` : 'Sem ocorrências';
+            infoContainer.appendChild(occurrenceSpan);
+            
+            li.appendChild(infoContainer);
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'student-actions';
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Editar';
+            editButton.className = 'edit-button';
+            editButton.onclick = (e) => {
+                e.stopPropagation();
+                editStudent(index);
+            };
+            actionsDiv.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Excluir';
+            deleteButton.className = 'delete-button';
+            deleteButton.onclick = (e) => {
+                e.stopPropagation();
+                showDeleteConfirmation(index);
+            };
+            actionsDiv.appendChild(deleteButton);
+
+            li.appendChild(actionsDiv);
+
+            li.onclick = () => showImage(item, index);
+            list.appendChild(li);
+        });
+    }
+
+    function showListView() {
+        document.getElementById('inputScreen').style.display = 'none';
+        document.getElementById('listViewScreen').style.display = 'block';
+        updateListView();
+    }
+
+    function showInputScreen() {
+        document.getElementById('listViewScreen').style.display = 'none';
+        document.getElementById('inputScreen').style.display = 'block';
+    }
+
+    function showImage(item, index) {
+        const modal = document.getElementById('imageModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalImage = document.getElementById('modalImage');
+        const modalOccurrence = document.getElementById('modalOccurrence');
+
+        modalTitle.textContent = `${item.text} - ${item.year}`;
+        if (item.image) {
+            modalImage.src = item.image;
+            modalImage.alt = `Imagem de ${item.text}`;
+        } else {
+            modalImage.src = `https://picsum.photos/400/300?random=${index}`;
+            modalImage.alt = `Imagem aleatória para ${item.text}`;
+        }
+        modalOccurrence.textContent = item.occurrence ? `Ocorrência: ${item.occurrence}` : 'Sem ocorrências';
+
+        modal.style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function showDeleteConfirmation(index) {
+        currentDeleteIndex = index;
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function confirmDelete() {
+        if (currentDeleteIndex !== -1) {
+            dataArray.splice(currentDeleteIndex, 1);
+            updateListView();
+            closeModal('deleteModal');
+            currentDeleteIndex = -1;
+        }
+    }
+
+    function editStudent(index) {
+        const student = dataArray[index];
+        document.getElementById('dataInput').value = student.text;
+        document.getElementById('occurrenceInput').value = student.occurrence;
+        showInputScreen();
+        dataArray.splice(index, 1);
+    }
+
+    function showPushNotificationModal() {
+        const modal = document.getElementById('pushNotificationModal');
+        const studentSelect = document.getElementById('studentSelect');
+        studentSelect.innerHTML = '';
+        dataArray.filter(item => item.year === currentYear).forEach((item, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = item.text;
+            studentSelect.appendChild(option);
+        });
+        modal.style.display = 'block';
+    }
+
+    function updateRecipientSelect() {
+        const recipientSelect = document.getElementById('recipientSelect');
+        const studentSelect = document.getElementById('studentSelect');
+        studentSelect.style.display = recipientSelect.value === 'specific' ? 'block' : 'none';
+    }
+
+    function updateCharCount() {
+        const pushMessage = document.getElementById('pushMessage');
+        const charCount = document.getElementById('charCount');
+        charCount.textContent = `${pushMessage.value.length}/200`;
+    }
+
+    function sendPushNotification() {
+        const recipientSelect = document.getElementById('recipientSelect');
+        const studentSelect = document.getElementById('studentSelect');
+        const pushMessage = document.getElementById('pushMessage');
+
+        let recipient = recipientSelect.value === 'all' ? 'Todos os pais' : dataArray[studentSelect.value].text;
+        let message = pushMessage.value;
+
+        if (message.trim() === '') {
+            alert('Por favor, digite uma mensagem antes de enviar.');
+            return;
+        }
+
+        alert(`Notificação enviada para: ${recipient}\nMensagem: ${message}`);
+        closeModal('pushNotificationModal');
+        pushMessage.value = '';
+        updateCharCount();
+    }
+
+    document.getElementById('recipientSelect').addEventListener('change', updateRecipientSelect);
+    document.getElementById('pushMessage').addEventListener('input', updateCharCount);
+
+    // Fechar os modais se clicar fora deles
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = 'none';
+        }
+    }
+    </script>
+</body>
+</html>
